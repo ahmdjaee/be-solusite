@@ -3,7 +3,7 @@
   $tagsValue = is_array($tags) ? implode(', ', $tags) : $tags;
 @endphp
 
-<form action="{{ $action }}" method="POST" class="p-3 p-md-4">
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="p-3 p-md-4">
   @csrf
   @if ($method !== 'POST')
     @method($method)
@@ -59,9 +59,30 @@
       @error('availability')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
-      <label class="form-label" for="thumbnail">Thumbnail URL</label>
-      <input class="form-control @error('thumbnail') is-invalid @enderror" id="thumbnail" name="thumbnail" value="{{ old('thumbnail', $product->thumbnail) }}">
-      @error('thumbnail')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <label class="form-label" for="thumbnail">Thumbnail Image</label>
+      <div class="kit-uploader @error('thumbnail') is-invalid @enderror @if ($product->thumbnail_url) is-filled @endif" data-uploader>
+        <input class="kit-uploader__input" id="thumbnail" name="thumbnail" type="file" accept="image/*" data-uploader-input>
+        <label class="kit-dropzone kit-uploader__zone" for="thumbnail" data-uploader-zone>
+          <i class="bi bi-image kit-uploader__icon"></i>
+          <span class="fw-semibold">Pilih gambar thumbnail</span>
+          <span class="small text-secondary mt-1">Klik atau seret gambar ke sini · maks 2 MB</span>
+        </label>
+        <div class="kit-uploader__preview" data-uploader-preview>
+          <img class="kit-uploader__image" alt="Thumbnail preview" data-uploader-image
+               src="{{ $product->thumbnail_url ?? '' }}">
+          <button class="kit-uploader__remove btn btn-sm" type="button" data-uploader-remove
+                  title="Hapus gambar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          <span class="kit-uploader__name small text-truncate" data-uploader-name>@if ($product->thumbnail_url){{ basename($product->thumbnail) }}@endif</span>
+        </div>
+      </div>
+      @error('thumbnail')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+      @if ($product->thumbnail_url)
+        <a class="text-secondary small d-inline-block mt-2" href="{{ $product->thumbnail_url }}" target="_blank" rel="noopener">
+          <i class="bi bi-box-arrow-up-right"></i> Lihat thumbnail saat ini
+        </a>
+      @endif
     </div>
     <div class="col-md-6">
       <label class="form-label" for="tags">Tags</label>
@@ -75,3 +96,64 @@
     <button class="btn btn-primary" type="submit">{{ $submit }}</button>
   </div>
 </form>
+
+@push('scripts')
+  <script>
+    document.querySelectorAll('[data-uploader]').forEach(function (uploader) {
+      var input = uploader.querySelector('[data-uploader-input]');
+      var zone = uploader.querySelector('[data-uploader-zone]');
+      var image = uploader.querySelector('[data-uploader-image]');
+      var name = uploader.querySelector('[data-uploader-name]');
+      var removeBtn = uploader.querySelector('[data-uploader-remove]');
+      if (!input || !image) return;
+
+      function showFile(file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          image.src = e.target.result;
+          if (name) name.textContent = file.name;
+          uploader.classList.add('is-filled');
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function clear() {
+        input.value = '';
+        image.removeAttribute('src');
+        if (name) name.textContent = '';
+        uploader.classList.remove('is-filled');
+      }
+
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (file && file.type.indexOf('image/') === 0) {
+          showFile(file);
+        }
+      });
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', clear);
+      }
+
+      ['dragenter', 'dragover'].forEach(function (evt) {
+        zone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          uploader.classList.add('is-dragging');
+        });
+      });
+      ['dragleave', 'drop'].forEach(function (evt) {
+        zone.addEventListener(evt, function (e) {
+          e.preventDefault();
+          uploader.classList.remove('is-dragging');
+        });
+      });
+      zone.addEventListener('drop', function (e) {
+        var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file && file.type.indexOf('image/') === 0) {
+          input.files = e.dataTransfer.files;
+          showFile(file);
+        }
+      });
+    });
+  </script>
+@endpush

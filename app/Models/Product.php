@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -30,6 +31,28 @@ class Product extends Model
             'price' => 'decimal:2',
             'tags' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Product $product): void {
+            if ($product->thumbnail && ! str_starts_with($product->thumbnail, 'http')) {
+                Storage::disk('public')->delete($product->thumbnail);
+            }
+        });
+    }
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (! $this->thumbnail) {
+            return null;
+        }
+
+        if (str_starts_with($this->thumbnail, 'http')) {
+            return $this->thumbnail;
+        }
+
+        return Storage::disk('public')->url($this->thumbnail);
     }
 
     public function discounts(): HasMany

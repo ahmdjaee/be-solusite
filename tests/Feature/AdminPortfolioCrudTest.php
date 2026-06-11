@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\PortfolioProductSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminPortfolioCrudTest extends TestCase
@@ -39,15 +41,40 @@ class AdminPortfolioCrudTest extends TestCase
             'thumbnail' => null,
         ]);
 
-        $this->getJson('/api/admin/products')
+        $this->getJson('/api/products')
             ->assertOk()
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id', 'name', 'price', 'tags', 'discount_amount', 'final_price'],
+                    '*' => ['id', 'name', 'price', 'tags', 'thumbnail', 'thumbnail_url', 'discount_amount', 'final_price'],
                 ],
                 'links',
                 'meta',
             ]);
+    }
+
+    public function test_product_api_accepts_thumbnail_upload(): void
+    {
+        Storage::fake('public');
+
+        $response = $this->post('/api/products', [
+            'name' => 'Booking App for Services',
+            'short' => 'Booking app with calendar.',
+            'description' => 'Aplikasi booking jasa dengan kalender dan dashboard.',
+            'price' => 3200000,
+            'label' => 'Custom-ready',
+            'status' => 'published',
+            'type' => 'app',
+            'availability' => 'custom',
+            'tags' => ['Booking', 'Calendar'],
+            'thumbnail' => UploadedFile::fake()->image('booking.jpg', 800, 600),
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.name', 'Booking App for Services')
+            ->assertJsonPath('data.thumbnail_url', '/storage/'.$response->json('data.thumbnail'));
+
+        Storage::disk('public')->assertExists($response->json('data.thumbnail'));
     }
 
     public function test_admin_crud_index_pages_render(): void

@@ -940,6 +940,104 @@ a {
   background: color-mix(in srgb, var(--app-blue-soft) 64%, var(--app-surface));
 }
 
+.kit-uploader {
+  position: relative;
+}
+
+.kit-uploader__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.kit-uploader__zone {
+  margin: 0;
+  width: 100%;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.kit-uploader__icon {
+  color: var(--app-blue-strong);
+  font-size: 1.75rem;
+  margin-bottom: .5rem;
+}
+
+.kit-uploader.is-dragging .kit-uploader__zone {
+  background: color-mix(in srgb, var(--app-blue-soft) 64%, var(--app-surface));
+  border-color: var(--app-blue);
+}
+
+.kit-uploader.is-invalid .kit-uploader__zone,
+.kit-uploader.is-invalid .kit-uploader__preview {
+  border-color: var(--app-red);
+}
+
+.kit-uploader__preview {
+  position: relative;
+  display: none;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  overflow: hidden;
+  background: var(--app-surface-2);
+}
+
+.kit-uploader.is-filled .kit-uploader__zone {
+  display: none;
+}
+
+.kit-uploader.is-filled .kit-uploader__preview {
+  display: block;
+}
+
+.kit-uploader__image {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  background:
+    repeating-conic-gradient(color-mix(in srgb, var(--app-text) 6%, transparent) 0% 25%, transparent 0% 50%)
+    50% / 18px 18px;
+}
+
+.kit-uploader__remove {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: color-mix(in srgb, var(--app-red) 86%, #000);
+  border: 1px solid color-mix(in srgb, #fff 28%, transparent);
+}
+
+.kit-uploader__remove:hover,
+.kit-uploader__remove:focus {
+  color: #fff;
+  background: var(--app-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-red) 24%, transparent);
+}
+
+.kit-uploader__name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 100%;
+  padding: .4rem .75rem;
+  color: #fff;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, #000 72%, transparent));
+}
+
 .kit-file-row,
 .kit-notification,
 .kit-integration,
@@ -2957,4 +3055,38 @@ a {
     min-width: 0;
   }
   .calendar-sidebar { max-height: unset; position: static; }
+}
+
+.app-toast {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-left: 4px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow-soft);
+  color: var(--app-text);
+}
+
+.app-toast .toast-body {
+  padding: .85rem 1rem;
+}
+
+.app-toast__icon {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.app-toast--success {
+  border-left-color: var(--app-green);
+}
+
+.app-toast--success .app-toast__icon {
+  color: var(--app-green);
+}
+
+.app-toast--error {
+  border-left-color: var(--app-red);
+}
+
+.app-toast--error .app-toast__icon {
+  color: var(--app-red);
 }

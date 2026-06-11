@@ -66,6 +66,7 @@
         checkbox.checked = checkAll.checked;
       });
     }
+
   });
 
   updateThemeIcon();

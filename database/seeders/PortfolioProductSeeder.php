@@ -24,7 +24,7 @@ class PortfolioProductSeeder extends Seeder
                 'type' => 'app',
                 'availability' => 'ready',
                 'tags' => ['Laravel', 'SaaS', 'API', 'Dashboard'],
-                'thumbnail' => 'https://placehold.co/600x400?text=Starter+SaaS',
+                'thumbnail' => null,
             ],
         );
 
@@ -39,7 +39,7 @@ class PortfolioProductSeeder extends Seeder
                 'type' => 'source-code',
                 'availability' => 'ready',
                 'tags' => ['Laravel', 'E-Commerce', 'Checkout'],
-                'thumbnail' => 'https://placehold.co/600x400?text=E-Commerce',
+                'thumbnail' => null,
             ],
         );
 
@@ -54,7 +54,7 @@ class PortfolioProductSeeder extends Seeder
                 'type' => 'app',
                 'availability' => 'custom',
                 'tags' => ['Booking', 'Calendar', 'Service App'],
-                'thumbnail' => 'https://placehold.co/600x400?text=Booking+App',
+                'thumbnail' => null,
             ],
         );
 

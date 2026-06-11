@@ -5,7 +5,7 @@ Dokumen ini untuk integrasi landing page frontend portfolio product digital deng
 ## Base URL
 
 ```text
-http://localhost:8000/api/admin
+http://localhost:8000/api
 ```
 
 Sesuaikan host/port dengan environment backend.
@@ -18,8 +18,9 @@ Header yang disarankan:
 
 ```http
 Accept: application/json
-Content-Type: application/json
 ```
+
+Gunakan `Content-Type: application/json` untuk request JSON. Untuk upload thumbnail product, pakai `multipart/form-data` via `FormData` dan biarkan browser mengisi boundary header otomatis.
 
 ## Common Response
 
@@ -29,8 +30,8 @@ Index endpoint mengembalikan Laravel paginated resource:
 {
   "data": [],
   "links": {
-    "first": "http://localhost:8000/api/admin/products?page=1",
-    "last": "http://localhost:8000/api/admin/products?page=1",
+    "first": "http://localhost:8000/api/products?page=1",
+    "last": "http://localhost:8000/api/products?page=1",
     "prev": null,
     "next": null
   },
@@ -38,7 +39,7 @@ Index endpoint mengembalikan Laravel paginated resource:
     "current_page": 1,
     "from": 1,
     "last_page": 1,
-    "path": "http://localhost:8000/api/admin/products",
+    "path": "http://localhost:8000/api/products",
     "per_page": 15,
     "to": 3,
     "total": 3
@@ -130,7 +131,8 @@ Object:
   "type": "app",
   "availability": "ready",
   "tags": ["Laravel", "SaaS", "API"],
-  "thumbnail": "https://placehold.co/600x400?text=Starter+SaaS",
+  "thumbnail": "products/abc123.jpg",
+  "thumbnail_url": "http://localhost:8000/storage/products/abc123.jpg",
   "discount_amount": 500000,
   "final_price": 2000000,
   "created_at": "2026-06-11T04:16:53.000000Z",
@@ -138,24 +140,42 @@ Object:
 }
 ```
 
-Create/update payload:
+Create/update payload memakai `multipart/form-data` karena `thumbnail` adalah file upload:
 
-```json
-{
-  "name": "Starter SaaS Boilerplate",
-  "short": "Laravel SaaS starter kit.",
-  "description": "Boilerplate SaaS untuk mempercepat development dashboard dan API.",
-  "price": 2500000,
-  "label": "Bestseller",
-  "status": "published",
-  "type": "app",
-  "availability": "ready",
-  "tags": ["Laravel", "SaaS", "API"],
-  "thumbnail": "https://placehold.co/600x400?text=Starter+SaaS"
-}
+```text
+name=Starter SaaS Boilerplate
+short=Laravel SaaS starter kit.
+description=Boilerplate SaaS untuk mempercepat development dashboard dan API.
+price=2500000
+label=Bestseller
+status=published
+type=app
+availability=ready
+tags[]=Laravel
+tags[]=SaaS
+tags[]=API
+thumbnail=(File image jpg/png/webp, max 2MB)
 ```
 
 Required: `name`, `short`, `description`, `price`, `status`, `type`, `availability`.
+
+Contoh FormData:
+
+```ts
+const payload = new FormData();
+payload.append("name", "Starter SaaS Boilerplate");
+payload.append("short", "Laravel SaaS starter kit.");
+payload.append("description", "Boilerplate SaaS untuk mempercepat development dashboard dan API.");
+payload.append("price", "2500000");
+payload.append("label", "Bestseller");
+payload.append("status", "published");
+payload.append("type", "app");
+payload.append("availability", "ready");
+payload.append("tags[]", "Laravel");
+payload.append("tags[]", "SaaS");
+payload.append("tags[]", "API");
+payload.append("thumbnail", fileInput.files[0]);
+```
 
 ## Services
 
@@ -357,7 +377,7 @@ Required: `product_id`, `name`, `code`, `type`, `value`.
 Endpoint `PATCH` menerima field parsial:
 
 ```http
-PATCH /api/admin/products/1
+PATCH /api/products/1
 ```
 
 ```json
@@ -370,14 +390,16 @@ PATCH /api/admin/products/1
 ## Frontend Integration Notes
 
 ```ts
-const API_BASE_URL = "http://localhost:8000/api/admin";
+const API_BASE_URL = "http://localhost:8000/api";
 
 async function apiFetch(path: string, options: RequestInit = {}) {
+  const isFormData = options.body instanceof FormData;
+
   return fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
+      ...(!isFormData ? { "Content-Type": "application/json" } : {}),
       ...(options.headers || {}),
     },
   });

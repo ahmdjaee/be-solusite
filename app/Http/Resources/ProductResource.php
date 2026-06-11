@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'availability' => $this->availability,
             'tags' => $this->tags ?? [],
             'thumbnail' => $this->thumbnail,
+            'thumbnail_url' => $this->thumbnail_url,
             'discount_amount' => $this->discountAmount(),
             'final_price' => $this->finalPrice(),
             'created_at' => $this->created_at?->toISOString(),

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Support\ProductThumbnail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -18,7 +19,7 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request): JsonResponse
     {
-        return ProductResource::make(Product::create($request->validated()))
+        return ProductResource::make(Product::create(ProductThumbnail::dataFrom($request)))
             ->response()
             ->setStatusCode(201);
     }
@@ -30,7 +31,7 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): ProductResource
     {
-        $product->update($request->validated());
+        $product->update(ProductThumbnail::dataFrom($request, $product));
 
         return ProductResource::make($product->refresh());
     }

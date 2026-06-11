@@ -34,7 +34,7 @@ class ProductRequest extends FormRequest
             'availability' => [$required, Rule::in(['ready', 'custom'])],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:255'],
-            'thumbnail' => ['nullable', 'string', 'max:2048'],
+            'thumbnail' => ['nullable', 'image', 'max:2048'],
         ];
     }
 

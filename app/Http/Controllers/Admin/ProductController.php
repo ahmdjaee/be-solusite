@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Models\Product;
+use App\Support\ProductThumbnail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -28,7 +29,7 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request): RedirectResponse
     {
-        Product::create($request->validated());
+        Product::create(ProductThumbnail::dataFrom($request));
 
         return redirect()->route('admin.products.index')->with('success', 'Product berhasil dibuat.');
     }
@@ -43,7 +44,7 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): RedirectResponse
     {
-        $product->update($request->validated());
+        $product->update(ProductThumbnail::dataFrom($request, $product));
 
         return redirect()->route('admin.products.index')->with('success', 'Product berhasil diperbarui.');
     }

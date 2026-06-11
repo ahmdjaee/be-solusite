@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\ServiceController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('api.admin.')->group(function (): void {
+Route::name('api.')->group(function (): void {
     Route::apiResource('products', ProductController::class);
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('portfolio', PortfolioController::class)->parameters(['portfolio' => 'portfolio']);
