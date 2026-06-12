@@ -18,6 +18,10 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->midd
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', fn () => redirect()->route('admin.dashboard'))->name('home');
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+    Route::put('/products/reorder', [AdminProductController::class, 'reorder'])->name('products.reorder');
+    Route::put('/services/reorder', [AdminServiceController::class, 'reorder'])->name('services.reorder');
+    Route::put('/portfolio/reorder', [AdminPortfolioController::class, 'reorder'])->name('portfolio.reorder');
+    Route::put('/plans/reorder', [AdminPlanController::class, 'reorder'])->name('plans.reorder');
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('services', AdminServiceController::class)->except(['show']);
     Route::resource('portfolio', AdminPortfolioController::class)->parameters(['portfolio' => 'portfolio'])->except(['show']);

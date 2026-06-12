@@ -93,4 +93,41 @@ class AdminPortfolioCrudTest extends TestCase
             $this->actingAs($user)->get($uri)->assertOk();
         }
     }
+
+    public function test_admin_can_reorder_products_and_api_uses_the_saved_order(): void
+    {
+        $products = collect([
+            ['name' => 'First Product', 'short' => 'First'],
+            ['name' => 'Second Product', 'short' => 'Second'],
+            ['name' => 'Third Product', 'short' => 'Third'],
+        ])->map(fn (array $data) => Product::create($data + [
+            'description' => 'Product used for reorder testing.',
+            'price' => 100000,
+            'status' => 'published',
+            'type' => 'app',
+            'availability' => 'ready',
+            'tags' => [],
+        ]));
+
+        $items = [
+            $products[2]->id,
+            $products[0]->id,
+            $products[1]->id,
+        ];
+
+        $this->putJson(route('admin.products.reorder'), ['items' => $items])
+            ->assertUnauthorized();
+
+        $this->actingAs(User::factory()->create())
+            ->putJson(route('admin.products.reorder'), ['items' => $items])
+            ->assertOk();
+
+        $this->assertSame($items, Product::ordered()->pluck('id')->all());
+
+        $this->getJson('/api/products')
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $products[2]->id)
+            ->assertJsonPath('data.1.id', $products[0]->id)
+            ->assertJsonPath('data.2.id', $products[1]->id);
+    }
 }

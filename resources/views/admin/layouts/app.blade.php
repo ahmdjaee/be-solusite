@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Solusite Admin') }} - {{ $title ?? 'Admin' }}</title>
   <script>
     document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('admin-theme') || 'light');
@@ -39,6 +40,8 @@
     </main>
   </div>
 
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;">
     @foreach (['success' => 'bi-check-circle-fill', 'error' => 'bi-exclamation-triangle-fill'] as $type => $icon)
       @if (session($type))
@@ -56,6 +59,7 @@
 
   <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+  <script src="{{ asset('assets/vendor/sortablejs/Sortable.min.js') }}"></script>
   <script src="{{ asset('assets/js/app.js') }}"></script>
   <script>
     document.querySelectorAll('.toast').forEach(function (el) {

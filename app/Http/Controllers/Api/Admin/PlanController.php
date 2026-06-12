@@ -13,7 +13,7 @@ class PlanController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return PlanResource::collection(Plan::latest()->paginate(15));
+        return PlanResource::collection(Plan::ordered()->paginate(15));
     }
 
     public function store(PlanRequest $request): JsonResponse

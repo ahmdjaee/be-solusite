@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReorderRequest;
 use App\Http\Requests\Admin\ServiceRequest;
 use App\Models\Service;
+use App\Support\ModelOrder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -14,7 +17,7 @@ class ServiceController extends Controller
     {
         return view('admin.services.index', [
             'title' => 'Services',
-            'services' => Service::latest()->get(),
+            'services' => Service::ordered()->get(),
         ]);
     }
 
@@ -53,5 +56,12 @@ class ServiceController extends Controller
         $service->delete();
 
         return redirect()->route('admin.services.index')->with('success', 'Service berhasil dihapus.');
+    }
+
+    public function reorder(ReorderRequest $request): JsonResponse
+    {
+        ModelOrder::update(Service::class, $request->validated('items'));
+
+        return response()->json(['message' => 'Urutan service berhasil disimpan.']);
     }
 }

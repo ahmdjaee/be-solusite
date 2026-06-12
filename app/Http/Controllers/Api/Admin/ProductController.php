@@ -14,7 +14,7 @@ class ProductController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::latest()->paginate(15));
+        return ProductResource::collection(Product::ordered()->paginate(15));
     }
 
     public function store(ProductRequest $request): JsonResponse

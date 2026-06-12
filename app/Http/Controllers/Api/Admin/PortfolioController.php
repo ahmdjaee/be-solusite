@@ -13,7 +13,7 @@ class PortfolioController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return PortfolioResource::collection(Portfolio::latest()->paginate(15));
+        return PortfolioResource::collection(Portfolio::ordered()->paginate(15));
     }
 
     public function store(PortfolioRequest $request): JsonResponse

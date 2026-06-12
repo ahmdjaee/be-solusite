@@ -7,11 +7,16 @@
     </x-slot:actions>
 
     <div class="table-responsive">
-      <table class="table align-middle mb-0" data-table data-per-page="10">
-        <thead><tr><th>Name</th><th>Description</th><th>Stack</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
+      <table class="table align-middle mb-0" data-table data-per-page="10" data-table-reorder="{{ route('admin.portfolio.reorder') }}">
+        <thead><tr><th class="table-reorder-column" data-sortable="false" aria-label="Order"></th><th data-sortable="false">Name</th><th data-sortable="false">Description</th><th data-sortable="false">Stack</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
         <tbody>
           @foreach ($portfolios as $portfolio)
-            <tr>
+            <tr data-order-id="{{ $portfolio->id }}">
+              <td class="table-reorder-cell">
+                <button class="table-reorder-handle" type="button" title="Drag to reorder" aria-label="Drag {{ $portfolio->name }} to reorder">
+                  <i class="bi bi-grip-vertical"></i>
+                </button>
+              </td>
               <td class="fw-semibold">{{ $portfolio->name }}</td>
               <td>{{ Str::limit($portfolio->description, 100) }}</td>
               <td>{{ implode(', ', $portfolio->stack ?? []) }}</td>

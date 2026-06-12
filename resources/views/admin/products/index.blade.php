@@ -7,20 +7,36 @@
     </x-slot:actions>
 
     <div class="table-responsive">
-      <table class="table align-middle mb-0" data-table data-per-page="10">
+      <table class="table align-middle mb-0" data-table data-per-page="10" data-table-reorder="{{ route('admin.products.reorder') }}">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Final</th>
-            <th>Status</th>
+            <th class="table-reorder-column" data-sortable="false" aria-label="Order"></th>
+            <th data-sortable="false">Image</th>
+            <th data-sortable="false">Name</th>
+            <th data-sortable="false">Type</th>
+            <th data-sortable="false">Price</th>
+            <th data-sortable="false">Final</th>
+            <th data-sortable="false">Status</th>
             <th class="text-end" data-sortable="false">Actions</th>
           </tr>
         </thead>
         <tbody>
           @foreach ($products as $product)
-            <tr>
+            <tr data-order-id="{{ $product->id }}">
+              <td class="table-reorder-cell">
+                <button class="table-reorder-handle" type="button" title="Drag to reorder" aria-label="Drag {{ $product->name }} to reorder">
+                  <i class="bi bi-grip-vertical"></i>
+                </button>
+              </td>
+              <td>
+                @if ($product->thumbnail_url)
+                  <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                @else
+                  <div class="rounded bg-light d-flex align-items-center justify-content-center text-secondary" style="width: 48px; height: 48px;">
+                    <i class="bi bi-image"></i>
+                  </div>
+                @endif
+              </td>
               <td>
                 <div class="fw-semibold">{{ $product->name }}</div>
                 <div class="small text-secondary">{{ $product->short }}</div>

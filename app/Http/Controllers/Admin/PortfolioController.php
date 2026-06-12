@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PortfolioRequest;
+use App\Http\Requests\Admin\ReorderRequest;
 use App\Models\Portfolio;
+use App\Support\ModelOrder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -14,7 +17,7 @@ class PortfolioController extends Controller
     {
         return view('admin.portfolio.index', [
             'title' => 'Portfolio',
-            'portfolios' => Portfolio::latest()->get(),
+            'portfolios' => Portfolio::ordered()->get(),
         ]);
     }
 
@@ -53,5 +56,12 @@ class PortfolioController extends Controller
         $portfolio->delete();
 
         return redirect()->route('admin.portfolio.index')->with('success', 'Portfolio berhasil dihapus.');
+    }
+
+    public function reorder(ReorderRequest $request): JsonResponse
+    {
+        ModelOrder::update(Portfolio::class, $request->validated('items'));
+
+        return response()->json(['message' => 'Urutan portfolio berhasil disimpan.']);
     }
 }

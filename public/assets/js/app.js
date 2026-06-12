@@ -376,6 +376,102 @@
     });
   }
 
+  function syncDataTableOrder(dataTable, items) {
+    var itemKeys = items.map(String);
+    var itemSet = new Set(itemKeys);
+    var rowsById = new Map();
+    var targetIndexes = [];
+
+    dataTable.data.data.forEach(function (row, index) {
+      var id = String(row.attributes?.["data-order-id"] || "");
+      if (!itemSet.has(id)) return;
+
+      rowsById.set(id, row);
+      targetIndexes.push(index);
+    });
+
+    if (targetIndexes.length !== itemKeys.length) return false;
+
+    targetIndexes.sort(function (a, b) { return a - b; }).forEach(function (targetIndex, index) {
+      dataTable.data.data[targetIndex] = rowsById.get(itemKeys[index]);
+    });
+
+    dataTable.update();
+
+    return true;
+  }
+
+  function initTableReorder(table, dataTable) {
+    if (!window.Sortable || !table.dataset.tableReorder) return;
+
+    var tbody = table.querySelector("tbody");
+    if (!tbody || tbody.dataset.sortableReady === "1") return;
+
+    tbody.dataset.sortableReady = "1";
+    var originalOrder = [];
+
+    var sortable = Sortable.create(tbody, {
+      animation: 160,
+      chosenClass: "table-row-chosen",
+      dataIdAttr: "data-order-id",
+      direction: "vertical",
+      dragClass: "table-row-drag",
+      draggable: "tr[data-order-id]",
+      easing: "cubic-bezier(.2, 0, 0, 1)",
+      ghostClass: "table-row-ghost",
+      handle: ".table-reorder-handle",
+      onStart: function () {
+        originalOrder = Array.from(tbody.querySelectorAll("tr[data-order-id]"), function (row) {
+          return row.dataset.orderId;
+        });
+        table.classList.add("is-reordering");
+      },
+      onEnd: function (event) {
+        table.classList.remove("is-reordering");
+        if (event.oldIndex === event.newIndex) return;
+
+        var items = Array.from(tbody.querySelectorAll("tr[data-order-id]"), function (row) {
+          return Number(row.dataset.orderId);
+        });
+        var token = document.querySelector('meta[name="csrf-token"]')?.content || "";
+
+        table.classList.add("is-saving-order");
+
+        fetch(table.dataset.tableReorder, {
+          method: "PUT",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": token,
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({ items: items })
+        })
+          .then(function (response) {
+            return response.json().catch(function () { return {}; }).then(function (data) {
+              if (!response.ok) throw new Error(data.message || "Urutan gagal disimpan.");
+              return data;
+            });
+          })
+          .then(function (data) {
+            if (!syncDataTableOrder(dataTable, items)) {
+              throw new Error("State tabel tidak dapat disinkronkan.");
+            }
+
+            table.classList.remove("is-saving-order");
+            if (window.showToast) {
+              showToast("Urutan tersimpan", data.message || "Urutan data berhasil diperbarui.", "success", 2600);
+            }
+          })
+          .catch(function (error) {
+            sortable.sort(originalOrder);
+            table.classList.remove("is-saving-order");
+            if (window.showToast) showToast("Gagal menyimpan", error.message, "danger");
+          });
+      }
+    });
+  }
+
   document.querySelectorAll("[data-table]").forEach(function (table) {
     if (!window.simpleDatatables) return;
 
@@ -387,7 +483,7 @@
       : -1;
 
     var perPage = Number(table.dataset.perPage || 8);
-    new simpleDatatables.DataTable(table, {
+    var dataTable = new simpleDatatables.DataTable(table, {
       searchable: true,
       fixedHeight: false,
       perPage,
@@ -402,6 +498,13 @@
       }
     });
     table.closest(".table-card")?.classList.add("is-enhanced");
+    initTableReorder(table, dataTable);
+
+    ["datatable.page", "datatable.search", "datatable.update"].forEach(function (eventName) {
+      dataTable.on(eventName, function () {
+        window.setTimeout(function () { initTableReorder(table, dataTable); });
+      });
+    });
 
     // Re-inject checkbox into the rebuilt thead
     if (checkAllSelector !== null && checkAllColIdx >= 0) {

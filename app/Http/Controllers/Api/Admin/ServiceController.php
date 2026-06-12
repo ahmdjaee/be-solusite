@@ -13,7 +13,7 @@ class ServiceController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return ServiceResource::collection(Service::latest()->paginate(15));
+        return ServiceResource::collection(Service::ordered()->paginate(15));
     }
 
     public function store(ServiceRequest $request): JsonResponse

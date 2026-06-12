@@ -7,11 +7,16 @@
     </x-slot:actions>
 
     <div class="table-responsive">
-      <table class="table align-middle mb-0" data-table data-per-page="10">
-        <thead><tr><th>Name</th><th>Level</th><th>Price</th><th>Availability</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
+      <table class="table align-middle mb-0" data-table data-per-page="10" data-table-reorder="{{ route('admin.services.reorder') }}">
+        <thead><tr><th class="table-reorder-column" data-sortable="false" aria-label="Order"></th><th data-sortable="false">Name</th><th data-sortable="false">Level</th><th data-sortable="false">Price</th><th data-sortable="false">Availability</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
         <tbody>
           @foreach ($services as $service)
-            <tr>
+            <tr data-order-id="{{ $service->id }}">
+              <td class="table-reorder-cell">
+                <button class="table-reorder-handle" type="button" title="Drag to reorder" aria-label="Drag {{ $service->name }} to reorder">
+                  <i class="bi bi-grip-vertical"></i>
+                </button>
+              </td>
               <td><div class="fw-semibold">{{ $service->name }}</div><div class="small text-secondary">{{ Str::limit($service->description, 80) }}</div></td>
               <td>{{ $service->level }}</td>
               <td>Rp {{ number_format((float) $service->price, 0, ',', '.') }}</td>
