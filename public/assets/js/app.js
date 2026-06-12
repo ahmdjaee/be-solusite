@@ -482,12 +482,14 @@
       ? Array.from(table.querySelectorAll("thead th")).indexOf(checkAllOrig.closest("th"))
       : -1;
 
+    var hasReorder = Boolean(table.dataset.tableReorder);
     var perPage = Number(table.dataset.perPage || 8);
     var dataTable = new simpleDatatables.DataTable(table, {
       searchable: true,
       fixedHeight: false,
+      paging: !hasReorder,
       perPage,
-      perPageSelect: [5, 8, 10, 25, 50],
+      perPageSelect: hasReorder ? false : [5, 8, 10, 25, 50],
       labels: {
         placeholder: "Search data...",
         searchTitle: "Search table",
