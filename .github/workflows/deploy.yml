@@ -1,0 +1,105 @@
+name: CI and Deploy Laravel
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Test Laravel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, fileinfo, gd
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate Composer files
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Run test suite
+        run: php artisan test
+
+  deploy:
+    name: Deploy to VPS
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy Laravel via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          command_timeout: 20m
+          script: |
+            set -Eeuo pipefail
+
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
+            PHP_BIN="${{ secrets.VPS_PHP_BINARY }}"
+            COMPOSER_BIN="${{ secrets.VPS_COMPOSER_BINARY }}"
+
+            DEPLOY_PATH="${DEPLOY_PATH:-/var/www/backend/be-solusite}"
+            PHP_BIN="${PHP_BIN:-php}"
+            COMPOSER_BIN="${COMPOSER_BIN:-composer}"
+
+            cd "$DEPLOY_PATH"
+
+            test -d .git || { echo "Deploy path is not a Git repository: $DEPLOY_PATH"; exit 1; }
+            test -f .env || { echo "Production .env is missing in $DEPLOY_PATH"; exit 1; }
+
+            "$PHP_BIN" artisan down --retry=60 || true
+            trap '"$PHP_BIN" artisan up || true' EXIT
+
+            git fetch --prune origin master
+            git checkout master
+            git pull --ff-only origin master
+
+            "$COMPOSER_BIN" install \
+              --no-dev \
+              --prefer-dist \
+              --no-interaction \
+              --no-progress \
+              --optimize-autoloader
+
+            "$PHP_BIN" artisan migrate --force
+            "$PHP_BIN" artisan storage:link || true
+            "$PHP_BIN" artisan optimize:clear
+            "$PHP_BIN" artisan config:cache
+            "$PHP_BIN" artisan view:cache
+            "$PHP_BIN" artisan queue:restart
+
+            chmod -R ug+rwX storage bootstrap/cache
+
+            "$PHP_BIN" artisan up
+            trap - EXIT
