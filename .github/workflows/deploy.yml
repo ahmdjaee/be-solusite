@@ -99,7 +99,5 @@ jobs:
             "$PHP_BIN" artisan view:cache
             "$PHP_BIN" artisan queue:restart
 
-            chmod -R ug+rwX storage bootstrap/cache
-
             "$PHP_BIN" artisan up
             trap - EXIT
