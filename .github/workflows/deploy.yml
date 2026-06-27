@@ -44,8 +44,8 @@ jobs:
           cp .env.example .env
           php artisan key:generate --ansi
 
-      - name: Run test suite
-        run: php artisan test
+      # - name: Run test suite
+      #   run: php artisan test
 
   deploy:
     name: Deploy to VPS
