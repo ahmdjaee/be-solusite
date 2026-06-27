@@ -24,8 +24,5 @@ class DatabaseSeeder extends Seeder
 
         // Storefront baru: kategori, produk CMS/lainnya, dan diskon marketing.
         $this->call(CatalogSeeder::class);
-
-        // Modul admin lama (services/plans/portfolio) — masih dikelola via panel admin.
-        $this->call(PortfolioProductSeeder::class);
     }
 }

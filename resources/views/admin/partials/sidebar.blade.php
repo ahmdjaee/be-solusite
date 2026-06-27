@@ -3,9 +3,6 @@
     ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'icon' => 'bi-speedometer2'],
     ['label' => 'Categories', 'route' => 'admin.categories.index', 'icon' => 'bi-tags'],
     ['label' => 'Products', 'route' => 'admin.products.index', 'icon' => 'bi-box-seam'],
-    ['label' => 'Services', 'route' => 'admin.services.index', 'icon' => 'bi-tools'],
-    ['label' => 'Portfolio', 'route' => 'admin.portfolio.index', 'icon' => 'bi-window-stack'],
-    ['label' => 'Plans', 'route' => 'admin.plans.index', 'icon' => 'bi-credit-card'],
     ['label' => 'Discounts', 'route' => 'admin.discounts.index', 'icon' => 'bi-percent'],
   ];
 @endphp
@@ -19,7 +16,7 @@
   </div>
 
   <div class="sidebar-nav">
-    <div class="nav-section">Portfolio Suite</div>
+    <div class="nav-section">Katalog</div>
     @foreach ($items as $item)
       <a class="sidebar-link {{ request()->routeIs($item['route']) || request()->routeIs(str_replace('.index', '.*', $item['route'])) ? 'active' : '' }}"
          href="{{ route($item['route']) }}"

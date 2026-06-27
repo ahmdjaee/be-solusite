@@ -1,62 +1,89 @@
 @extends('admin.layouts.app')
 
+@php
+  $grouped = $products->groupBy('category_id');
+  $uncategorized = $grouped->get(null, collect());
+@endphp
+
 @section('content')
-  <x-table-card title="Products" subtitle="Produk aplikasi digital dan source code.">
+  <x-table-card title="Products" subtitle="Produk digital dikelompokkan per kategori.">
     <x-slot:actions>
       <a class="btn btn-primary" href="{{ route('admin.products.create') }}"><i class="bi bi-plus-lg me-1"></i>Create</a>
     </x-slot:actions>
 
-    <div class="table-responsive">
-      <table class="table align-middle mb-0" data-table data-per-page="10" data-table-reorder="{{ route('admin.products.reorder') }}">
-        <thead>
-          <tr>
-            <th class="table-reorder-column" data-sortable="false" aria-label="Order"></th>
-            <th data-sortable="false">Image</th>
-            <th data-sortable="false">Name</th>
-            <th data-sortable="false">Type</th>
-            <th data-sortable="false">Price</th>
-            <th data-sortable="false">Final</th>
-            <th data-sortable="false">Status</th>
-            <th class="text-end" data-sortable="false">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach ($products as $product)
-            <tr data-order-id="{{ $product->id }}">
-              <td class="table-reorder-cell">
-                <button class="table-reorder-handle" type="button" title="Drag to reorder" aria-label="Drag {{ $product->name }} to reorder">
-                  <i class="bi bi-grip-vertical"></i>
-                </button>
-              </td>
-              <td>
-                @if ($product->thumbnail_url)
-                  <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
-                @else
-                  <div class="rounded bg-light d-flex align-items-center justify-content-center text-secondary" style="width: 48px; height: 48px;">
-                    <i class="bi bi-image"></i>
-                  </div>
-                @endif
-              </td>
-              <td>
-                <div class="fw-semibold">{{ $product->name }}</div>
-                <div class="small text-secondary">{{ $product->short }}</div>
-              </td>
-              <td><span class="badge bg-secondary">{{ $product->type }}</span></td>
-              <td>Rp {{ number_format((float) $product->price, 0, ',', '.') }}</td>
-              <td>Rp {{ number_format($product->finalPrice(), 0, ',', '.') }}</td>
-              <td><span class="badge bg-primary">{{ $product->status }}</span></td>
-              <td class="text-end">
-                <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.products.edit', $product) }}"><i class="bi bi-pencil"></i></a>
-                <form class="d-inline" action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Hapus product ini?')">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
-                </form>
-              </td>
-            </tr>
-          @endforeach
-        </tbody>
-      </table>
+    {{-- Tabs per kategori --}}
+    <ul class="nav nav-tabs px-3 pt-3" role="tablist">
+      @foreach ($categories as $category)
+        <li class="nav-item" role="presentation">
+          <button class="nav-link @if ($loop->first) active @endif" id="tab-cat-{{ $category->id }}" data-bs-toggle="tab" data-bs-target="#pane-cat-{{ $category->id }}" type="button" role="tab">
+            {{ $category->name }} <span class="badge bg-secondary ms-1">{{ optional($grouped->get($category->id))->count() ?? 0 }}</span>
+          </button>
+        </li>
+      @endforeach
+      @if ($uncategorized->isNotEmpty())
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-cat-none" data-bs-toggle="tab" data-bs-target="#pane-cat-none" type="button" role="tab">
+            Tanpa Kategori <span class="badge bg-secondary ms-1">{{ $uncategorized->count() }}</span>
+          </button>
+        </li>
+      @endif
+    </ul>
+
+    <div class="tab-content">
+      @foreach ($categories as $category)
+        <div class="tab-pane fade @if ($loop->first) show active @endif" id="pane-cat-{{ $category->id }}" role="tabpanel">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0" data-table data-per-page="10" data-table-reorder="{{ route('admin.products.reorder') }}">
+              <thead>
+                <tr>
+                  <th class="table-reorder-column" data-sortable="false" aria-label="Order"></th>
+                  <th data-sortable="false">Image</th>
+                  <th data-sortable="false">Name</th>
+                  <th data-sortable="false">Category</th>
+                  <th data-sortable="false">Type</th>
+                  <th data-sortable="false">Price</th>
+                  <th data-sortable="false">Final</th>
+                  <th data-sortable="false">Status</th>
+                  <th class="text-end" data-sortable="false">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse ($grouped->get($category->id, collect()) as $product)
+                  @include('admin.products.row', ['product' => $product, 'reorder' => true])
+                @empty
+                  <tr><td colspan="9" class="text-center text-secondary py-4">Belum ada produk di kategori ini.</td></tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+      @endforeach
+
+      @if ($uncategorized->isNotEmpty())
+        <div class="tab-pane fade" id="pane-cat-none" role="tabpanel">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Price</th>
+                  <th>Final</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($uncategorized as $product)
+                  @include('admin.products.row', ['product' => $product, 'reorder' => false])
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      @endif
     </div>
   </x-table-card>
 @endsection

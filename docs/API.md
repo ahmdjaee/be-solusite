@@ -137,8 +137,6 @@ Mengembalikan **semua** diskon. Frontend memfilter yang aktif (boleh pakai `curr
     {
       "id": 1,
       "product_id": 1,
-      "name": "Promo Peluncuran",
-      "code": "LAUNCH20",
       "type": "percentage",
       "value": 20,
       "starts_at": "2026-06-20",
@@ -149,8 +147,6 @@ Mengembalikan **semua** diskon. Frontend memfilter yang aktif (boleh pakai `curr
     {
       "id": 3,
       "product_id": 4,
-      "name": "Potongan Landing Page",
-      "code": "LANDING200",
       "type": "fixed",
       "value": 200000,
       "starts_at": "2026-06-20",
@@ -166,8 +162,6 @@ Mengembalikan **semua** diskon. Frontend memfilter yang aktif (boleh pakai `curr
 |-------|------|------------|
 | `id` | int | ID diskon |
 | `product_id` | int | Produk yang didiskon (cocokkan ke `product.id`) |
-| `name` | string | Nama promo |
-| `code` | string | Kode promo |
 | `type` | string | `percentage` \| `fixed` |
 | `value` | number | `20` (persen) atau `200000` (rupiah) |
 | `starts_at` | string\|null | `YYYY-MM-DD` |
