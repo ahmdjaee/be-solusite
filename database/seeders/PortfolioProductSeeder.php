@@ -2,62 +2,20 @@
 
 namespace Database\Seeders;
 
-use App\Models\Discount;
 use App\Models\Plan;
 use App\Models\Portfolio;
-use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Database\Seeder;
 
+/**
+ * Data modul admin lama (services, plans, portfolio). Katalog produk + diskon
+ * storefront kini ada di {@see CatalogSeeder}. Seeder ini hanya menjaga panel
+ * admin tetap terisi; storefront tidak memakai data di sini.
+ */
 class PortfolioProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $starter = Product::updateOrCreate(
-            ['name' => 'Starter SaaS Boilerplate'],
-            [
-                'short' => 'Laravel SaaS starter kit with billing-ready structure.',
-                'description' => 'Boilerplate SaaS untuk mempercepat development dashboard, subscription flow, role sederhana, dan REST API product.',
-                'price' => 2500000,
-                'label' => 'Bestseller',
-                'status' => 'published',
-                'type' => 'app',
-                'availability' => 'ready',
-                'tags' => ['Laravel', 'SaaS', 'API', 'Dashboard'],
-                'thumbnail' => null,
-            ],
-        );
-
-        $ecommerce = Product::updateOrCreate(
-            ['name' => 'E-Commerce Source Code'],
-            [
-                'short' => 'Source code toko online lengkap.',
-                'description' => 'Template e-commerce dengan katalog, cart, checkout, order management, dan halaman admin siap dikembangkan.',
-                'price' => 1800000,
-                'label' => 'Source',
-                'status' => 'published',
-                'type' => 'source-code',
-                'availability' => 'ready',
-                'tags' => ['Laravel', 'E-Commerce', 'Checkout'],
-                'thumbnail' => null,
-            ],
-        );
-
-        $booking = Product::updateOrCreate(
-            ['name' => 'Booking App for Services'],
-            [
-                'short' => 'Aplikasi booking jasa dengan kalender.',
-                'description' => 'Aplikasi booking untuk salon, klinik, konsultan, dan jasa appointment dengan jadwal, status booking, serta notifikasi dasar.',
-                'price' => 3200000,
-                'label' => 'Custom-ready',
-                'status' => 'published',
-                'type' => 'app',
-                'availability' => 'custom',
-                'tags' => ['Booking', 'Calendar', 'Service App'],
-                'thumbnail' => null,
-            ],
-        );
-
         Service::updateOrCreate(
             ['name' => 'MVP Product Build'],
             [
@@ -142,45 +100,6 @@ class PortfolioProductSeeder extends Seeder
                 'price' => 18000000,
                 'highlight' => false,
                 'features' => ['Advanced workflow', 'Third-party integration', 'Queue jobs', 'Optimization'],
-            ],
-        );
-
-        Discount::updateOrCreate(
-            ['code' => 'SAASLAUNCH20'],
-            [
-                'product_id' => $starter->id,
-                'name' => 'SaaS Launch Promo',
-                'type' => 'percentage',
-                'value' => 20,
-                'starts_at' => now()->subDay(),
-                'ends_at' => now()->addMonth(),
-                'is_active' => true,
-            ],
-        );
-
-        Discount::updateOrCreate(
-            ['code' => 'SOURCE500K'],
-            [
-                'product_id' => $ecommerce->id,
-                'name' => 'Source Code Discount',
-                'type' => 'fixed',
-                'value' => 500000,
-                'starts_at' => now()->subWeek(),
-                'ends_at' => now()->addWeeks(2),
-                'is_active' => true,
-            ],
-        );
-
-        Discount::updateOrCreate(
-            ['code' => 'BOOKINGOLD'],
-            [
-                'product_id' => $booking->id,
-                'name' => 'Expired Booking Promo',
-                'type' => 'percentage',
-                'value' => 10,
-                'starts_at' => now()->subMonths(2),
-                'ends_at' => now()->subMonth(),
-                'is_active' => true,
             ],
         );
     }

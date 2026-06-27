@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
@@ -22,6 +23,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): v
     Route::put('/services/reorder', [AdminServiceController::class, 'reorder'])->name('services.reorder');
     Route::put('/portfolio/reorder', [AdminPortfolioController::class, 'reorder'])->name('portfolio.reorder');
     Route::put('/plans/reorder', [AdminPlanController::class, 'reorder'])->name('plans.reorder');
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('services', AdminServiceController::class)->except(['show']);
     Route::resource('portfolio', AdminPortfolioController::class)->parameters(['portfolio' => 'portfolio'])->except(['show']);

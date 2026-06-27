@@ -14,26 +14,32 @@ class ProductController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::ordered()->paginate(15));
+        // Storefront membutuhkan seluruh katalog (untuk grouping per kategori),
+        // jadi tidak dipaginasi. Eager load kategori + diskon aktif untuk harga.
+        return ProductResource::collection(
+            Product::with(['category', 'activeDiscount'])->ordered()->get()
+        );
     }
 
     public function store(ProductRequest $request): JsonResponse
     {
-        return ProductResource::make(Product::create(ProductThumbnail::dataFrom($request)))
+        $product = Product::create(ProductThumbnail::dataFrom($request));
+
+        return ProductResource::make($product->load(['category', 'activeDiscount']))
             ->response()
             ->setStatusCode(201);
     }
 
     public function show(Product $product): ProductResource
     {
-        return ProductResource::make($product);
+        return ProductResource::make($product->load(['category', 'activeDiscount']));
     }
 
     public function update(ProductRequest $request, Product $product): ProductResource
     {
         $product->update(ProductThumbnail::dataFrom($request, $product));
 
-        return ProductResource::make($product->refresh());
+        return ProductResource::make($product->refresh()->load(['category', 'activeDiscount']));
     }
 
     public function destroy(Product $product): JsonResponse

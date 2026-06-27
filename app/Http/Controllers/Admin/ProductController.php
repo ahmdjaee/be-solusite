@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Requests\Admin\ReorderRequest;
+use App\Models\Category;
 use App\Models\Product;
 use App\Support\ModelOrder;
 use App\Support\ProductThumbnail;
@@ -27,6 +28,7 @@ class ProductController extends Controller
         return view('admin.products.create', [
             'title' => 'Create Product',
             'product' => new Product(['status' => 'published', 'type' => 'app', 'availability' => 'ready']),
+            'categories' => Category::active()->ordered()->get(),
         ]);
     }
 
@@ -42,6 +44,7 @@ class ProductController extends Controller
         return view('admin.products.edit', [
             'title' => 'Edit Product',
             'product' => $product,
+            'categories' => Category::active()->ordered()->get(),
         ]);
     }
 

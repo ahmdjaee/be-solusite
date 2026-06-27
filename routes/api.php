@@ -1,16 +1,16 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\DiscountController;
-use App\Http\Controllers\Api\Admin\PlanController;
-use App\Http\Controllers\Api\Admin\PortfolioController;
 use App\Http\Controllers\Api\Admin\ProductController;
-use App\Http\Controllers\Api\Admin\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function (): void {
+    // Storefront katalog produk digital (CMS, dll).
     Route::apiResource('products', ProductController::class);
-    Route::apiResource('services', ServiceController::class);
-    Route::apiResource('portfolio', PortfolioController::class)->parameters(['portfolio' => 'portfolio']);
-    Route::apiResource('plans', PlanController::class);
+    Route::apiResource('categories', CategoryController::class);
     Route::apiResource('discounts', DiscountController::class);
 });
+
+// Endpoint lama services/plans/portfolio sudah di-deprecate — storefront baru
+// tidak memakainya lagi. Modul admin (web) masih mengelola data tersebut.

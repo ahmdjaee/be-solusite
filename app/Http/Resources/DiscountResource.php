@@ -12,17 +12,15 @@ class DiscountResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
-            'product' => ProductResource::make($this->product),
             'name' => $this->name,
             'code' => $this->code,
             'type' => $this->type,
             'value' => (float) $this->value,
-            'starts_at' => $this->starts_at?->toISOString(),
-            'ends_at' => $this->ends_at?->toISOString(),
+            'starts_at' => $this->starts_at?->toDateString(),
+            'ends_at' => $this->ends_at?->toDateString(),
             'is_active' => (bool) $this->is_active,
+            // currently_active = is_active && tanggal sekarang dalam rentang (dihitung server).
             'currently_active' => $this->isCurrentlyActive(),
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
         ];
     }
 }

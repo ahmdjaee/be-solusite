@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasSortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
@@ -13,23 +14,31 @@ class Product extends Model
 {
     use HasFactory, HasSortOrder;
 
+    public const CMS_SLUG = 'cms';
+
     protected $fillable = [
+        'category_id',
         'name',
         'short',
         'description',
         'price',
+        'static_price',
+        'dynamic_price',
         'label',
         'status',
         'type',
         'availability',
         'tags',
         'thumbnail',
+        'demo_url',
     ];
 
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
+            'static_price' => 'integer',
+            'dynamic_price' => 'integer',
             'tags' => 'array',
         ];
     }
@@ -56,6 +65,11 @@ class Product extends Model
         return Storage::disk('public')->url($this->thumbnail);
     }
 
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function discounts(): HasMany
     {
         return $this->hasMany(Discount::class);
@@ -74,24 +88,53 @@ class Product extends Model
             ->latestOfMany();
     }
 
-    public function discountAmount(): float
+    public function categorySlug(): ?string
     {
-        $discount = $this->activeDiscount()->first();
-
-        if (! $discount) {
-            return 0.0;
-        }
-
-        $price = (float) $this->price;
-        $amount = $discount->type === 'percentage'
-            ? $price * ((float) $discount->value / 100)
-            : (float) $discount->value;
-
-        return round(min($amount, $price), 2);
+        return $this->category?->slug;
     }
 
+    public function isCms(): bool
+    {
+        return $this->categorySlug() === self::CMS_SLUG;
+    }
+
+    /**
+     * Harga jual final ("mulai dari"). Diskon TIDAK mengurangi harga ini —
+     * untuk produk CMS harganya adalah paket Statis (default Rp500.000),
+     * untuk produk lain memakai `price`.
+     */
     public function finalPrice(): float
     {
-        return round(max((float) $this->price - $this->discountAmount(), 0), 2);
+        if ($this->isCms()) {
+            return (float) ($this->static_price ?? 500000);
+        }
+
+        return (float) $this->price;
+    }
+
+    /**
+     * Harga coret (marketing) dari harga final berdasarkan diskon aktif.
+     * Mengembalikan null bila tidak ada diskon aktif.
+     */
+    public function originalPrice(): ?float
+    {
+        return $this->strikethroughFor($this->finalPrice());
+    }
+
+    /**
+     * Hitung harga coret untuk sebuah harga paket (mis. Statis / Dinamis)
+     * memakai diskon aktif produk. Null bila tidak ada diskon aktif.
+     */
+    public function strikethroughFor(?float $base): ?float
+    {
+        if ($base === null) {
+            return null;
+        }
+
+        $discount = $this->relationLoaded('activeDiscount')
+            ? $this->activeDiscount
+            : $this->activeDiscount()->first();
+
+        return $discount?->strikethrough($base);
     }
 }

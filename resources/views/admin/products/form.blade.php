@@ -11,6 +11,17 @@
 
   <div class="row g-3">
     <div class="col-md-6">
+      <label class="form-label" for="category_id">Category</label>
+      <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
+        <option value="">Choose category</option>
+        @foreach ($categories as $category)
+          <option value="{{ $category->id }}" @selected((int) old('category_id', $product->category_id) === $category->id)>{{ $category->name }}</option>
+        @endforeach
+      </select>
+      <div class="form-text">Pilih <strong>CMS</strong> untuk mengaktifkan paket Statis &amp; Dinamis.</div>
+      @error('category_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-6">
       <label class="form-label" for="name">Name</label>
       <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $product->name) }}" required>
       @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -19,6 +30,11 @@
       <label class="form-label" for="short">Short</label>
       <input class="form-control @error('short') is-invalid @enderror" id="short" name="short" value="{{ old('short', $product->short) }}" required>
       @error('short')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="demo_url">Demo URL</label>
+      <input class="form-control @error('demo_url') is-invalid @enderror" id="demo_url" name="demo_url" value="{{ old('demo_url', $product->demo_url) }}" placeholder="https://demo.solusite.studio/...">
+      @error('demo_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-12">
       <label class="form-label" for="description">Description</label>
@@ -29,6 +45,16 @@
       <label class="form-label" for="price">Price</label>
       <input class="form-control @error('price') is-invalid @enderror" id="price" name="price" type="number" min="0" step="0.01" value="{{ old('price', $product->price) }}" required>
       @error('price')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="static_price">Static Price <span class="text-secondary small">(paket CMS Statis)</span></label>
+      <input class="form-control @error('static_price') is-invalid @enderror" id="static_price" name="static_price" type="number" min="0" step="1" value="{{ old('static_price', $product->static_price) }}" placeholder="500000">
+      @error('static_price')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="dynamic_price">Dynamic Price <span class="text-secondary small">(paket CMS Dinamis)</span></label>
+      <input class="form-control @error('dynamic_price') is-invalid @enderror" id="dynamic_price" name="dynamic_price" type="number" min="0" step="1" value="{{ old('dynamic_price', $product->dynamic_price) }}" placeholder="1989000">
+      @error('dynamic_price')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-4">
       <label class="form-label" for="label">Label</label>

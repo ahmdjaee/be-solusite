@@ -13,26 +13,27 @@ class DiscountController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return DiscountResource::collection(Discount::with('product')->latest()->paginate(15));
+        // Kirim semua diskon; frontend memfilter yang aktif berdasarkan tanggal.
+        return DiscountResource::collection(Discount::latest()->get());
     }
 
     public function store(DiscountRequest $request): JsonResponse
     {
-        return DiscountResource::make(Discount::create($request->validated())->load('product'))
+        return DiscountResource::make(Discount::create($request->validated()))
             ->response()
             ->setStatusCode(201);
     }
 
     public function show(Discount $discount): DiscountResource
     {
-        return DiscountResource::make($discount->load('product'));
+        return DiscountResource::make($discount);
     }
 
     public function update(DiscountRequest $request, Discount $discount): DiscountResource
     {
         $discount->update($request->validated());
 
-        return DiscountResource::make($discount->refresh()->load('product'));
+        return DiscountResource::make($discount->refresh());
     }
 
     public function destroy(Discount $discount): JsonResponse
