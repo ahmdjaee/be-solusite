@@ -19,7 +19,7 @@ class ProductController extends Controller
     {
         return view('admin.products.index', [
             'title' => 'Products',
-            'products' => Product::with('category')->ordered()->get(),
+            'products' => Product::with(['category', 'activeDiscount'])->ordered()->get(),
             'categories' => Category::ordered()->get(),
         ]);
     }

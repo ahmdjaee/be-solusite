@@ -13,16 +13,6 @@
       @error('product_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
-      <label class="form-label" for="name">Name</label>
-      <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $discount->name) }}" required>
-      @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-    <div class="col-md-4">
-      <label class="form-label" for="code">Code</label>
-      <input class="form-control @error('code') is-invalid @enderror" id="code" name="code" value="{{ old('code', $discount->code) }}" required>
-      @error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror
-    </div>
-    <div class="col-md-4">
       <label class="form-label" for="type">Type</label>
       <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
         @foreach (['percentage' => 'Percentage', 'fixed' => 'Fixed'] as $value => $label)

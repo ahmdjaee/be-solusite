@@ -8,13 +8,11 @@
 
     <div class="table-responsive">
       <table class="table align-middle mb-0" data-table data-per-page="10">
-        <thead><tr><th>Name</th><th>Product</th><th>Code</th><th>Type</th><th>Value</th><th>Active</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
+        <thead><tr><th>Product</th><th>Type</th><th>Value</th><th>Active</th><th class="text-end" data-sortable="false">Actions</th></tr></thead>
         <tbody>
           @foreach ($discounts as $discount)
             <tr>
-              <td class="fw-semibold">{{ $discount->name }}</td>
-              <td>{{ $discount->product?->name }}</td>
-              <td><code>{{ $discount->code }}</code></td>
+              <td class="fw-semibold">{{ $discount->product?->name }}</td>
               <td>{{ $discount->type }}</td>
               <td>{{ $discount->type === 'percentage' ? $discount->value.'%' : 'Rp '.number_format((float) $discount->value, 0, ',', '.') }}</td>
               <td><span class="badge {{ $discount->isCurrentlyActive() ? 'bg-success' : 'bg-secondary' }}">{{ $discount->isCurrentlyActive() ? 'Active' : 'Inactive' }}</span></td>

@@ -42,7 +42,7 @@
                   <th data-sortable="false">Category</th>
                   <th data-sortable="false">Type</th>
                   <th data-sortable="false">Price</th>
-                  <th data-sortable="false">Final</th>
+                  <th data-sortable="false">Discount</th>
                   <th data-sortable="false">Status</th>
                   <th class="text-end" data-sortable="false">Actions</th>
                 </tr>
@@ -70,7 +70,7 @@
                   <th>Category</th>
                   <th>Type</th>
                   <th>Price</th>
-                  <th>Final</th>
+                  <th>Discount</th>
                   <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>

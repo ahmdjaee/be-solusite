@@ -21,7 +21,7 @@ class DashboardController extends Controller
                 ['label' => 'CMS Products', 'value' => Product::whereHas('category', fn ($q) => $q->where('slug', Product::CMS_SLUG))->count(), 'icon' => 'bi-window', 'tone' => 'warning'],
                 ['label' => 'Active Discounts', 'value' => Discount::currentlyActive()->count(), 'icon' => 'bi-percent', 'tone' => 'danger'],
             ],
-            'products' => Product::with('category')->latest()->take(5)->get(),
+            'products' => Product::with(['category', 'activeDiscount'])->latest()->take(5)->get(),
         ]);
     }
 }

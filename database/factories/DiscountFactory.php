@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Discount;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Discount>
@@ -20,8 +19,6 @@ class DiscountFactory extends Factory
 
         return [
             'product_id' => Product::factory(),
-            'name' => 'Promo '.$this->faker->word(),
-            'code' => Str::upper($this->faker->unique()->bothify('PROMO###')),
             'type' => $type,
             'value' => $type === 'percentage'
                 ? $this->faker->numberBetween(5, 50)

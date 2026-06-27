@@ -28,13 +28,6 @@ class DiscountRequest extends FormRequest
 
         return [
             'product_id' => [$required, 'exists:products,id'],
-            'name' => [$required, 'string', 'max:255'],
-            'code' => [
-                $required,
-                'string',
-                'max:255',
-                Rule::unique('discounts', 'code')->ignore($discount),
-            ],
             'type' => [$required, Rule::in(['percentage', 'fixed'])],
             'value' => [
                 $required,

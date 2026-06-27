@@ -164,20 +164,18 @@ class CatalogSeeder extends Seeder
 
         // ----- Diskon marketing aktif (hanya untuk harga coret) -----
         $discounts = [
-            ['code' => 'LAUNCH20', 'name' => 'Promo Peluncuran', 'product' => $cmsModels['solusite-cms'], 'type' => 'percentage', 'value' => 20],
-            ['code' => 'TOKO15', 'name' => 'Promo Toko Online', 'product' => $cmsModels['toko-online-cms'], 'type' => 'percentage', 'value' => 15],
-            ['code' => 'LANDING200', 'name' => 'Potongan Landing Page', 'product' => $cmsModels['landing-page-cms'], 'type' => 'fixed', 'value' => 200000],
-            ['code' => 'SEKOLAH25', 'name' => 'Promo Sekolah', 'product' => $cmsModels['sekolah-cms'], 'type' => 'percentage', 'value' => 25],
-            ['code' => 'POS15', 'name' => 'Promo POS Kasir', 'product' => $otherModels['POS Kasir'], 'type' => 'percentage', 'value' => 15],
-            ['code' => 'CRM20', 'name' => 'Promo CRM', 'product' => $otherModels['CRM Pelanggan'], 'type' => 'percentage', 'value' => 20],
+            ['product' => $cmsModels['solusite-cms'], 'type' => 'percentage', 'value' => 20],
+            ['product' => $cmsModels['toko-online-cms'], 'type' => 'percentage', 'value' => 15],
+            ['product' => $cmsModels['landing-page-cms'], 'type' => 'fixed', 'value' => 200000],
+            ['product' => $cmsModels['sekolah-cms'], 'type' => 'percentage', 'value' => 25],
+            ['product' => $otherModels['POS Kasir'], 'type' => 'percentage', 'value' => 15],
+            ['product' => $otherModels['CRM Pelanggan'], 'type' => 'percentage', 'value' => 20],
         ];
 
         foreach ($discounts as $data) {
             Discount::updateOrCreate(
-                ['code' => $data['code']],
+                ['product_id' => $data['product']->id],
                 [
-                    'product_id' => $data['product']->id,
-                    'name' => $data['name'],
                     'type' => $data['type'],
                     'value' => $data['value'],
                     'starts_at' => now()->subWeek(),

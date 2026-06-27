@@ -23,7 +23,18 @@
   <td><span class="badge bg-info-subtle text-info-emphasis">{{ $product->category?->name ?? '—' }}</span></td>
   <td><span class="badge bg-secondary">{{ $product->type }}</span></td>
   <td>Rp {{ number_format((float) $product->price, 0, ',', '.') }}</td>
-  <td>Rp {{ number_format($product->finalPrice(), 0, ',', '.') }}</td>
+  <td>
+    @php($discount = $product->activeDiscount)
+    @if ($discount)
+      @if ($discount->type === 'percentage')
+        <span class="badge bg-danger-subtle text-danger-emphasis">{{ (float) $discount->value }}%</span>
+      @else
+        <span class="badge bg-danger-subtle text-danger-emphasis">Rp {{ number_format((float) $discount->value, 0, ',', '.') }}</span>
+      @endif
+    @else
+      <span class="text-secondary">—</span>
+    @endif
+  </td>
   <td><span class="badge bg-primary">{{ $product->status }}</span></td>
   <td class="text-end">
     <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.products.edit', $product) }}"><i class="bi bi-pencil"></i></a>
