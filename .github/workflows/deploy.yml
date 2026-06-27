@@ -42,7 +42,7 @@ jobs:
       - name: Prepare test environment
         run: |
           cp .env.example .env
-          php artisan key:generate --ansi
+          php artisan key:generate --ansi 
 
       # - name: Run test suite
       #   run: php artisan test
