@@ -11,9 +11,8 @@ return new class extends Migration
         Schema::create('discounts', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            // Disembunyikan dari UI/API untuk saat ini, tetap disimpan untuk kebutuhan mendatang.
-            $table->string('name')->nullable();
-            $table->string('code')->nullable()->unique();
+            $table->string('name');
+            $table->string('code')->unique();
             $table->enum('type', ['percentage', 'fixed']);
             $table->decimal('value', 12, 2);
             $table->dateTime('starts_at')->nullable();
