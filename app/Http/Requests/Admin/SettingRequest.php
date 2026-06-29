@@ -26,6 +26,13 @@ class SettingRequest extends FormRequest
             'facebook_url' => ['nullable', 'url', 'max:255'],
             'tiktok_url' => ['nullable', 'url', 'max:255'],
             'youtube_url' => ['nullable', 'url', 'max:255'],
+            // SEO
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'og_image' => ['nullable', 'image', 'max:2048'],
+            'google_analytics_id' => ['nullable', 'string', 'max:64'],
+            'google_site_verification' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

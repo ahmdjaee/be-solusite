@@ -24,12 +24,15 @@ class SettingController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('logo')) {
-            $old = Setting::get('logo');
+        foreach (Setting::IMAGE_KEYS as $imageKey) {
+            if (! $request->hasFile($imageKey)) {
+                continue;
+            }
+            $old = Setting::get($imageKey);
             if ($old && ! str_starts_with($old, 'http')) {
                 Storage::disk('public')->delete($old);
             }
-            Setting::put('logo', $request->file('logo')->store('settings', 'public'));
+            Setting::put($imageKey, $request->file($imageKey)->store('settings', 'public'));
         }
 
         foreach (Setting::TEXT_KEYS as $key) {

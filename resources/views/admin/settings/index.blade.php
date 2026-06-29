@@ -11,7 +11,7 @@
       @method('PUT')
 
       <ul class="nav nav-pills mb-4" role="tablist">
-        @foreach (['branding' => 'Branding', 'contact' => 'Kontak & CTA', 'social' => 'Media Sosial'] as $id => $label)
+        @foreach (['branding' => 'Branding', 'contact' => 'Kontak & CTA', 'social' => 'Media Sosial', 'seo' => 'SEO'] as $id => $label)
           <li class="nav-item" role="presentation">
             <button class="nav-link @if ($loop->first) active @endif" id="tab-{{ $id }}" data-bs-toggle="pill" data-bs-target="#pane-{{ $id }}" type="button" role="tab">{{ $label }}</button>
           </li>
@@ -104,6 +104,55 @@
                 </div>
               </div>
             @endforeach
+          </div>
+        </div>
+
+        {{-- ============ SEO ============ --}}
+        <div class="tab-pane fade" id="pane-seo" role="tabpanel">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="meta_title">Meta Title</label>
+              <input class="form-control" id="meta_title" name="meta_title" value="{{ old('meta_title', $settings['meta_title'] ?? '') }}" maxlength="255">
+              <div class="form-text">Judul default di tab browser & hasil pencarian (±60 karakter ideal).</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="meta_description">Meta Description</label>
+              <textarea class="form-control" id="meta_description" name="meta_description" rows="2" maxlength="500">{{ old('meta_description', $settings['meta_description'] ?? '') }}</textarea>
+              <div class="form-text">Ringkasan situs untuk Google (±155 karakter ideal).</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="meta_keywords">Meta Keywords</label>
+              <textarea class="form-control" id="meta_keywords" name="meta_keywords" rows="2" maxlength="500" placeholder="cms, website, toko online">{{ old('meta_keywords', $settings['meta_keywords'] ?? '') }}</textarea>
+              <div class="form-text">Pisahkan dengan koma.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="og_image">OG Image <span class="text-secondary small">(preview saat dibagikan)</span></label>
+              <div class="kit-uploader @if (!empty($settings['og_image_url'])) is-filled @endif" data-uploader>
+                <input class="kit-uploader__input" id="og_image" name="og_image" type="file" accept="image/*" data-uploader-input>
+                <label class="kit-dropzone kit-uploader__zone" for="og_image" data-uploader-zone>
+                  <i class="bi bi-image kit-uploader__icon"></i>
+                  <span class="fw-semibold">Pilih gambar share</span>
+                  <span class="small text-secondary mt-1">Rasio 1200×630 · maks 2 MB</span>
+                </label>
+                <div class="kit-uploader__preview" data-uploader-preview>
+                  <img class="kit-uploader__image" alt="OG image preview" data-uploader-image src="{{ $settings['og_image_url'] ?? '' }}">
+                  <button class="kit-uploader__remove btn btn-sm" type="button" data-uploader-remove title="Hapus gambar"><i class="bi bi-x-lg"></i></button>
+                  <span class="kit-uploader__name small text-truncate" data-uploader-name></span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label" for="google_analytics_id">Google Analytics ID</label>
+                  <input class="form-control" id="google_analytics_id" name="google_analytics_id" value="{{ old('google_analytics_id', $settings['google_analytics_id'] ?? '') }}" placeholder="G-XXXXXXXXXX">
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="google_site_verification">Google Site Verification</label>
+                  <input class="form-control" id="google_site_verification" name="google_site_verification" value="{{ old('google_site_verification', $settings['google_site_verification'] ?? '') }}" placeholder="kode meta verification">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

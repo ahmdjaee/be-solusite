@@ -191,7 +191,13 @@ Pengaturan situs yang dikelola admin (mengganti nilai hardcode di frontend: logo
     "instagram_url": "https://instagram.com/solusite.studio",
     "facebook_url": "",
     "tiktok_url": "",
-    "youtube_url": ""
+    "youtube_url": "",
+    "meta_title": "Solusite Studio — Website & Aplikasi Siap Pakai",
+    "meta_description": "Solusite Studio menyediakan CMS dan aplikasi bisnis siap pakai ...",
+    "meta_keywords": "cms, website, aplikasi bisnis, toko online, solusite",
+    "og_image_url": "https://.../storage/settings/og.png",
+    "google_analytics_id": "G-XXXXXXXXXX",
+    "google_site_verification": ""
   }
 }
 ```
@@ -207,6 +213,12 @@ Pengaturan situs yang dikelola admin (mengganti nilai hardcode di frontend: logo
 | `phone` | string | Nomor telepon |
 | `address` | string | Alamat |
 | `instagram_url` / `facebook_url` / `tiktok_url` / `youtube_url` | string | URL sosial (string kosong bila tidak diisi) |
+| `meta_title` | string | SEO: judul default (`<title>`) |
+| `meta_description` | string | SEO: meta description |
+| `meta_keywords` | string | SEO: keywords dipisah koma |
+| `og_image_url` | string\|null | SEO: gambar Open Graph (preview share), `null` bila belum diunggah |
+| `google_analytics_id` | string | SEO: GA4 Measurement ID (mis. `G-XXXX`) |
+| `google_site_verification` | string | SEO: kode verifikasi Google Search Console |
 
 **Contoh link CTA WhatsApp:**
 ```ts

@@ -12,19 +12,34 @@ class Setting extends Model
 
     private const CACHE_KEY = 'settings.map';
 
-    /** Field teks yang dikelola (logo ditangani terpisah sebagai file). */
+    /** Field teks yang dikelola (file/gambar ditangani terpisah, lihat IMAGE_KEYS). */
     public const TEXT_KEYS = [
+        // Branding
         'site_name',
         'tagline',
+        // Kontak & CTA
         'whatsapp_number',
         'whatsapp_message',
         'email',
         'phone',
         'address',
+        // Media sosial
         'instagram_url',
         'facebook_url',
         'tiktok_url',
         'youtube_url',
+        // SEO
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'google_analytics_id',
+        'google_site_verification',
+    ];
+
+    /** Field gambar (disimpan sebagai path, diekspos sebagai `<key>_url`). */
+    public const IMAGE_KEYS = [
+        'logo',
+        'og_image',
     ];
 
     protected static function booted(): void
@@ -49,6 +64,12 @@ class Setting extends Model
             'facebook_url' => '',
             'tiktok_url' => '',
             'youtube_url' => '',
+            // SEO
+            'meta_title' => 'Solusite Studio — Website & Aplikasi Siap Pakai',
+            'meta_description' => 'Solusite Studio menyediakan CMS dan aplikasi bisnis siap pakai yang mudah dikelola tanpa coding.',
+            'meta_keywords' => 'cms, website, aplikasi bisnis, toko online, landing page, solusite',
+            'google_analytics_id' => '',
+            'google_site_verification' => '',
         ];
     }
 
@@ -68,18 +89,18 @@ class Setting extends Model
         static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 
-    public static function logoUrl(): ?string
+    public static function imageUrl(string $key): ?string
     {
-        $logo = static::get('logo');
+        $path = static::get($key);
 
-        if (! $logo) {
+        if (! $path) {
             return null;
         }
 
-        return str_starts_with($logo, 'http') ? $logo : Storage::disk('public')->url($logo);
+        return str_starts_with($path, 'http') ? $path : Storage::disk('public')->url($path);
     }
 
-    /** Nilai siap-pakai (default + override DB), termasuk logo_url. */
+    /** Nilai siap-pakai (default + override DB), termasuk URL gambar. */
     public static function publicValues(): array
     {
         $defaults = static::defaults();
@@ -89,7 +110,9 @@ class Setting extends Model
             $values[$key] = static::get($key, $defaults[$key] ?? null);
         }
 
-        $values['logo_url'] = static::logoUrl();
+        foreach (self::IMAGE_KEYS as $key) {
+            $values[$key.'_url'] = static::imageUrl($key);
+        }
 
         return $values;
     }
