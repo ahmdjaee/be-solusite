@@ -20,6 +20,7 @@ Dokumentasi endpoint publik untuk storefront (katalog produk digital, fokus CMS)
 | GET | `/api/products/{id}` | Detail satu produk |
 | GET | `/api/categories` | Kategori aktif, urut `sort_order` |
 | GET | `/api/discounts` | Semua diskon (frontend memfilter aktif berdasarkan tanggal) |
+| GET | `/api/settings` | Pengaturan situs: logo, kontak CTA (WhatsApp/email), media sosial |
 
 Endpoint lama `services`, `plans`, `portfolio` **sudah dihapus** (akan balas `404`).
 
@@ -168,6 +169,51 @@ Mengembalikan **semua** diskon. Frontend memfilter yang aktif (boleh pakai `curr
 | `ends_at` | string\|null | `YYYY-MM-DD` |
 | `is_active` | bool | Toggle aktif dari admin |
 | `currently_active` | bool | `is_active` **dan** tanggal sekarang dalam rentang (dihitung server) |
+
+---
+
+## 5. GET /api/settings
+
+Pengaturan situs yang dikelola admin (mengganti nilai hardcode di frontend: logo, WhatsApp, email, dll). Selalu mengembalikan objek penuh dengan nilai default bila belum disetel.
+
+**Response `200`**
+```json
+{
+  "data": {
+    "site_name": "Solusite Studio",
+    "tagline": "Website & aplikasi siap pakai untuk bisnis Anda.",
+    "logo_url": "https://.../storage/settings/logo.png",
+    "whatsapp_number": "6281234567890",
+    "whatsapp_message": "Halo Solusite, saya tertarik dengan produk Anda.",
+    "email": "hello@solusite.studio",
+    "phone": "+62 812-3456-7890",
+    "address": "Jakarta, Indonesia",
+    "instagram_url": "https://instagram.com/solusite.studio",
+    "facebook_url": "",
+    "tiktok_url": "",
+    "youtube_url": ""
+  }
+}
+```
+
+| Field | Tipe | Keterangan |
+|-------|------|------------|
+| `site_name` | string | Nama situs |
+| `tagline` | string | Deskripsi singkat (hero/header) |
+| `logo_url` | string\|null | URL logo siap pakai (`null` bila belum diunggah) |
+| `whatsapp_number` | string | Nomor WA format internasional tanpa `+` (mis. `62812...`) |
+| `whatsapp_message` | string | Teks prefilled saat tombol WhatsApp diklik |
+| `email` | string | Email kontak |
+| `phone` | string | Nomor telepon |
+| `address` | string | Alamat |
+| `instagram_url` / `facebook_url` / `tiktok_url` / `youtube_url` | string | URL sosial (string kosong bila tidak diisi) |
+
+**Contoh link CTA WhatsApp:**
+```ts
+const wa = `https://wa.me/${s.whatsapp_number}?text=${encodeURIComponent(s.whatsapp_message)}`;
+```
+
+> Objeknya **bukan** list — baca langsung `data` sebagai objek (bukan array).
 
 ---
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +21,6 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): v
     Route::resource('categories', AdminCategoryController::class)->except(['show']);
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('discounts', AdminDiscountController::class)->except(['show']);
+    Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
 });

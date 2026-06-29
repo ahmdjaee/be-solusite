@@ -4,6 +4,7 @@
     ['label' => 'Categories', 'route' => 'admin.categories.index', 'icon' => 'bi-tags'],
     ['label' => 'Products', 'route' => 'admin.products.index', 'icon' => 'bi-box-seam'],
     ['label' => 'Discounts', 'route' => 'admin.discounts.index', 'icon' => 'bi-percent'],
+    ['label' => 'Settings', 'route' => 'admin.settings.edit', 'icon' => 'bi-gear'],
   ];
 @endphp
 

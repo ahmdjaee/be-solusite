@@ -24,5 +24,8 @@ class DatabaseSeeder extends Seeder
 
         // Storefront baru: kategori, produk CMS/lainnya, dan diskon marketing.
         $this->call(CatalogSeeder::class);
+
+        // Pengaturan situs default (logo, kontak CTA, media sosial).
+        $this->call(SettingSeeder::class);
     }
 }
